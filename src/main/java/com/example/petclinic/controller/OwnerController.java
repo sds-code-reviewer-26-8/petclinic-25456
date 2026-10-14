@@ -6,6 +6,7 @@ import com.example.petclinic.service.OwnerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,8 +23,11 @@ public class OwnerController {
     }
 
     @GetMapping
-    public List<OwnerDto> list() {
-        return ownerService.findOwners().stream()
+    public List<OwnerDto> list(@RequestParam(required = false) String lastname) {
+        List<Owner> owners = (lastname == null || lastname.isBlank())
+                ? ownerService.findOwners()
+                : ownerService.findOwnersByLastName(lastname.trim());
+        return owners.stream()
                 .map(o -> new OwnerDto(
                         o.getId(),
                         o.getFirstName(),
